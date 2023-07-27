@@ -3,8 +3,8 @@ import { gql } from '@apollo/client';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// export const dynamic = 'force-dynamic'
-// export const revalidate = 10
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 export const fetchCache = 'force-no-store'
 
 

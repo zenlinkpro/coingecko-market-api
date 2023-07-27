@@ -3,6 +3,11 @@ import { gql } from '@apollo/client';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+// export const runtime = "nodejs"
+
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 const ALL_PAIRS_TIKERS = gql`
 query MyQuery {
   pairs {
@@ -32,7 +37,11 @@ export async function GET(request: NextRequest) {
   })
   const pairs = result.data?.pairs?.map((pair: any) => {
     const pairHourData = pair.pairHourData;
-    const pairDayData = pairHourData.reduce((total: any, hour: any) => {
+    const currentHourIndex = Number.parseInt((new Date().getTime() / 3600000).toString(), 10)
+    const hourStartUnix = Number(currentHourIndex - 24) * 3600000
+    const pairDayData = pairHourData
+    .filter(hourData => Number(hourData.hourStartUnix) >= hourStartUnix)
+    .reduce((total: any, hour: any) => {
       total.dailyVolumeToken0 += Number(hour.hourlyVolumeToken0)
       total.dailyVolumeToken1 += Number(hour.hourlyVolumeToken1)
       return total
@@ -45,7 +54,7 @@ export async function GET(request: NextRequest) {
       base_currency: pair.token0.id,
       target_currency: pair.token1.id,
       ticker_id: `${pair.token0.id}_${pair.token1.id}`,
-      last_price: Number(pair.token0Price),
+      last_price: Number(pair.token1Price),
       liquidity_in_usd: Number(pair.reserveUSD),
       base_volume: pairDayData.dailyVolumeToken0,
       target_volume: pairDayData.dailyVolumeToken1,

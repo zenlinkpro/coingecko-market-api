@@ -5,8 +5,9 @@ import type { NextRequest } from 'next/server';
 
 // export const runtime = "nodejs"
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+// export const dynamic = 'force-dynamic'
+// export const revalidate = 10
+export const fetchCache = 'force-no-store'
 
 const ALL_PAIRS_TIKERS = gql`
 query MyQuery {
@@ -33,7 +34,8 @@ query MyQuery {
 `
 export async function GET(request: NextRequest) {
   const result = await CLIENTS.BifrostKusama.query({
-    query: ALL_PAIRS_TIKERS
+    query: ALL_PAIRS_TIKERS,
+    fetchPolicy: 'no-cache',
   })
   const pairs = result.data?.pairs?.map((pair: any) => {
     const pairHourData = pair.pairHourData;

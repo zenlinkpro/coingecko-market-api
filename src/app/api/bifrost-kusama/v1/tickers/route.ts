@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     const currentHourIndex = Number.parseInt((new Date().getTime() / 3600000).toString(), 10)
     const hourStartUnix = Number(currentHourIndex - 24) * 3600000
     const pairDayData = pairHourData
-    .filter(hourData => Number(hourData.hourStartUnix) >= hourStartUnix)
+    .filter((hourData: any) => Number(hourData.hourStartUnix) >= hourStartUnix)
     .reduce((total: any, hour: any) => {
       total.dailyVolumeToken0 += Number(hour.hourlyVolumeToken0)
       total.dailyVolumeToken1 += Number(hour.hourlyVolumeToken1)
